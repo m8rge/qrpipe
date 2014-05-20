@@ -53,7 +53,8 @@ $(document).on('ready', function() {
         var data = '';
         var lastFrame;
         qrcode.callback = function (text) {
-            $('#currentText').text(text);
+            console.log('read', text);
+
             if (status == 'closed' && text == '#start-send') {
                 status = 'sending';
             }
@@ -67,14 +68,15 @@ $(document).on('ready', function() {
                         data += matches[2];
                         $('#result').text(data);
                         qrcodeCreator.makeCode('#frame-ok-'+matches[1]);
-                        $('#encodedText').text('#frame-ok-'+matches[1]);
+                        console.log('send', '#frame-ok-'+matches[1]);
                     }
                 }
             }
         };
         qrcodeCreator.makeCode('#listen');
-        $('#encodedText').text('#listen');
-        $(this).attr('disabled', 'disabled');
+        console.log('send', '#listen');
+
+        $('.start-button').attr('disabled', 'disabled');
     });
 
     function makeFrame(frameNumber, data) {
@@ -87,12 +89,13 @@ $(document).on('ready', function() {
         var frameData;
         var data = $('#send-text').val();
         qrcode.callback = function (text) {
-            $('#currentText').text(text);
+            console.log('read', text);
+
             if (status == 'closed' && text == '#listen') {
                 status = 'sending';
                 frameData = data.substring(frameNumber, frameNumber+1);
                 qrcodeCreator.makeCode(makeFrame(frameNumber, frameData));
-                $('#encodedText').text(makeFrame(frameNumber, frameData));
+                console.log('send', makeFrame(frameNumber, frameData));
             }
             if (status == 'sending') {
                 if (text == '#frame-ok-'+frameNumber) {
@@ -100,17 +103,18 @@ $(document).on('ready', function() {
                     if (data.length >= frameNumber) {
                         frameData = data.substring(frameNumber, frameNumber + 1);
                         qrcodeCreator.makeCode(makeFrame(frameNumber, frameData));
-                        $('#encodedText').text(makeFrame(frameNumber, frameData));
+                        console.log('send', makeFrame(frameNumber, frameData));
                     } else {
                         qrcodeCreator.makeCode('#end-send');
-                        $('#encodedText').text('#end-send');
+                        console.log('send', '#end-send');
                     }
                 }
             }
         };
         qrcodeCreator.makeCode('#start-send');
-        $('#encodedText').text('#start-send');
-        $(this).attr('disabled', 'disabled');
+        console.log('send', '#start-send');
+
+        $('.start-button').attr('disabled', 'disabled');
     });
 
     initCanvas(640, 480);
